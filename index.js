@@ -2,10 +2,10 @@
 
 const STORE = {
   items: [
-    { name: 'apples',  checked: false },
-    { name: 'oranges', checked: false },
-    { name: 'milk',    checked: true  },
-    { name: 'bread',   checked: false },
+    { name: 'apples',  checked: false, editable: false },
+    { name: 'oranges', checked: false, editable: false },
+    { name: 'milk',    checked: true,  editable: false  },
+    { name: 'bread',   checked: false, editable: false },
   ],
   filters: {
     searchTerm  : '',
@@ -38,6 +38,23 @@ const toggleItemChecked = function (itemIndex) {
 };
 
 /**
+ * Set an item in the store to be editable
+ */
+const editItem = function (itemIndex) {
+
+  STORE.items[itemIndex].editable = true;
+};
+
+/**
+ * Update an item in the store
+ */
+const updateItem = function (itemIndex, name) {
+
+  STORE.items[itemIndex].name     = name;
+  STORE.items[itemIndex].editable = false;
+};
+
+/**
  * Get item index from DOM
  */
 const getItemIndexFromElement = function (element) {
@@ -54,7 +71,7 @@ const getItemIndexFromElement = function (element) {
  */
 const attachEventHandlers = function () {
 
-  // On form submit
+  // On add item form submit
   $('#js-shopping-list-form').on('submit', (e) => {
 
     e.preventDefault();
@@ -94,6 +111,44 @@ const attachEventHandlers = function () {
     renderShoppingList();
   });
 
+  // On edit button click
+  $('.js-shopping-list').on('click', '.js-item-edit', e => {
+
+    const itemIndex = getItemIndexFromElement(e.currentTarget);
+
+    editItem(itemIndex);
+
+    renderShoppingList();
+  });
+
+  // On editable focusout or enter key pressed
+  $('.js-shopping-list').on('focusout keyup', '.js-item-input', e => {
+
+    if (e.type === 'keyup' && e.which !== 13) {
+      return;
+    }
+
+    const itemIndex = getItemIndexFromElement(e.currentTarget);
+
+    updateItem(itemIndex, $(e.target).val());
+
+    renderShoppingList();
+  });
+
+  // On save button clicked
+  $('.js-shopping-list').on('click', '.js-item-save', e => {
+
+    if (e.type === 'keyup' && e.which !== 13) {
+      return;
+    }
+
+    const itemIndex = getItemIndexFromElement(e.currentTarget);
+
+    updateItem(itemIndex, $(e.target).val());
+
+    renderShoppingList();
+  });
+
   // On delete button click
   $('.js-shopping-list').on('click', '.js-item-delete', e => {
 
@@ -110,18 +165,50 @@ const attachEventHandlers = function () {
  */
 const generateShoppingListItemElement = function (item, index) {
 
-  return `
-    <li class="js-item-index-element" data-item-index="${index}">
-      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
-      <div class="shopping-item-controls">
-        <button class="shopping-item-toggle js-item-toggle">
+  // Start item
+  let html = `<li class="js-item-index-element" data-item-index="${index}">`;
+
+  // Item name
+  if (item.editable) {
+    html += `<input type="text" class="shopping-item-input js-item-input" value="${item.name}" autofocus="true">`;
+  } else {
+    html += `<span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>`;
+  }
+
+  // Save button
+  if (item.editable) {
+    html += `<button class="shopping-item-save js-item-save">
+               <span class="button-label">save</span>
+            </button>`;
+  } else {
+    html += '';
+  }
+
+  // Start item controls
+  html += '<div class="shopping-item-controls">';
+
+  // Check button
+  html += `<button class="shopping-item-toggle js-item-toggle" ${item.editable ? 'disabled' : ''}>
             <span class="button-label">check</span>
-        </button>
-        <button class="shopping-item-delete js-item-delete">
-            <span class="button-label">delete</span>
-        </button>
-      </div>
-    </li>`;
+          </button>`;
+
+  // Edit button
+  html += `<button class="shopping-item-edit js-item-edit" ${item.editable ? 'disabled' : ''}>
+             <span class="button-label">edit</span>
+          </button>`;
+
+  // Delete button
+  html += `<button class="shopping-item-delete js-item-delete" ${item.editable ? 'disabled' : ''}>
+             <span class="button-label">delete</span>
+          </button>`;
+
+  // End item controls
+  html += '</div>';
+
+  // End item
+  html += '</li>';
+
+  return html;
 };
 
 /**
