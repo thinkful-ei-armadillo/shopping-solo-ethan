@@ -170,7 +170,7 @@ const generateShoppingListItemElement = function (item, index) {
 
   // Item name
   if (item.editable) {
-    html += `<input type="text" class="shopping-item-input js-item-input" value="${item.name}" autofocus="true">`;
+    html += `<input type="text" class="shopping-item-input js-item-input" value="${item.name}">`;
   } else {
     html += `<span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>`;
   }
