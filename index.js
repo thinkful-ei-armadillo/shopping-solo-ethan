@@ -40,14 +40,14 @@ const toggleItemChecked = function (itemIndex) {
 /**
  * Get item index from DOM
  */
-function getItemIndexFromElement(element) {
+const getItemIndexFromElement = function (element) {
 
   const itemIndex = $(element)
     .closest('.js-item-index-element')
     .attr('data-item-index');
 
   return Number.parseInt(itemIndex, 10);
-}
+};
 
 /**
  * Attach all event handlers
