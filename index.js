@@ -165,14 +165,21 @@ const attachEventHandlers = function () {
  */
 const generateShoppingListItemElement = function (item, index) {
 
+
+
+  const nameWithHighlights = item.name.replace(
+    new RegExp(STORE.filters.searchTerm, 'g'),
+    `<span class="js-search-term-highlight">${STORE.filters.searchTerm}</span>`
+  );
+
   // Start item
   let html = `<li class="js-item-index-element" data-item-index="${index}">`;
 
   // Item name
   if (item.editable) {
-    html += `<input type="text" class="shopping-item-input js-item-input" value="${item.name}">`;
+    html += `<input type="text" class="shopping-item-input js-item-input" value="${nameWithHighlights}">`;
   } else {
-    html += `<span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>`;
+    html += `<span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${nameWithHighlights}</span>`;
   }
 
   // Save button
