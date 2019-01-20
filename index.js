@@ -138,13 +138,11 @@ const attachEventHandlers = function () {
   // On save button clicked
   $('.js-shopping-list').on('click', '.js-item-save', e => {
 
-    if (e.type === 'keyup' && e.which !== 13) {
-      return;
-    }
-
     const itemIndex = getItemIndexFromElement(e.currentTarget);
 
-    updateItem(itemIndex, $(e.target).val());
+    const input = $(e.target).closest('li').find('.js-item-input').val();
+
+    updateItem(itemIndex, input);
 
     renderShoppingList();
   });
@@ -177,7 +175,7 @@ const generateShoppingListItemElement = function (item, index) {
 
   // Item name
   if (item.editable) {
-    html += `<input type="text" class="shopping-item-input js-item-input" value="${nameWithHighlights}">`;
+    html += `<input type="text" class="shopping-item-input js-item-input" value="${item.name}">`;
   } else {
     html += `<span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${nameWithHighlights}</span>`;
   }
